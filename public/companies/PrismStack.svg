@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 32" fill="none">
+  <path d="M16 5L26 25H6L16 5Z" fill="currentColor"/>
+  <path d="M16 10L21 21H11L16 10Z" fill="white" opacity=".25"/>
+  <text x="40" y="21" fill="currentColor" font-size="15" font-family="Inter,Arial,sans-serif" font-weight="700">PrismStack</text>
+</svg>

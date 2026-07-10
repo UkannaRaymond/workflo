@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 32" fill="none">
+  <path d="M16 4L26 10V22L16 28L6 22V10L16 4Z" fill="currentColor"/>
+  <path d="M12 16L15.5 19.5L21 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="40" y="21" fill="currentColor" font-size="15" font-family="Inter,Arial,sans-serif" font-weight="700">NovaFlow</text>
+</svg>

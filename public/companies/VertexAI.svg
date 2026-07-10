@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32" fill="none">
+  <path d="M7 7l9 18L25 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="16" cy="25" r="2" fill="currentColor"/>
+  <text x="40" y="21" fill="currentColor" font-size="15" font-family="Inter,Arial,sans-serif" font-weight="700">VertexAI</text>
+</svg>

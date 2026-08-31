@@ -24,6 +24,7 @@ export function WorkspaceMembersList() {
                 alt="User Image"
                 className="object-cover"
                 fill
+                sizes="32px"
               />
               <AvatarFallback>
                 {member.full_name?.charAt(0).toUpperCase()}

@@ -41,6 +41,7 @@ export function UserNav() {
               alt="User Image"
               fill
               className="object-cover"
+              sizes="40px"
             />
 
             <AvatarFallback>

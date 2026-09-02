@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         hostname: "avatar.vercel.sh",
         protocol: "https",
       },
+      {
+        hostname: "ddaz3nefpw.ufs.sh",
+        protocol: "https",
+      },
     ],
   },
 };

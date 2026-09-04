@@ -39,7 +39,6 @@ export function MessageItem({ message }: iAppProps) {
           className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
           content={JSON.parse(message.content)}
         />
-
         {message.imageUrl && (
           <div className="mt-3">
             <Image

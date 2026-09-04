@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAttachmentUploadType } from "@/hooks/use-attachment-upload";
 import { ImageIcon, Send } from "lucide-react";
 import { AttachmentChip } from "./AttachmentChip";
+import { useState } from "react";
 
 interface iAppProps {
   value: string;
@@ -20,15 +21,18 @@ export function MessageComposer({
   isSubmitting,
   upload,
 }: iAppProps) {
+  const [isEmpty, setIsEmpty] = useState(true);
   return (
     <>
       <RichTextEditor
         field={{ value, onChange }}
+        onEmptyChange={setIsEmpty}
+        onSubmit={onSubmit}
         sendButton={
           <Button
-            disabled={isSubmitting}
+            disabled={isSubmitting || (isEmpty && !upload.stageUrl)}
             type="button"
-            size={"sm"}
+            size="sm"
             onClick={onSubmit}
           >
             <Send className="size-4 mr-1" />

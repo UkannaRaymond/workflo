@@ -5,7 +5,7 @@ import { requiredAuthMiddleware } from "../middlewares/auth";
 import { base } from "../middlewares/base";
 import { requiredWorkspaceMiddleware } from "../middlewares/workspace";
 import { prisma } from "@/lib/db";
-import { createMessageSchema } from "../schemas/message";
+import { createMessageSchema, updateMessageSchema } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
 import { Message } from "@/lib/generated/prisma/client";
 import { readSecurityMiddleware } from "../middlewares/arcjet/read";
@@ -87,7 +87,7 @@ export const listMessages = base
     });
 
     if (!channel) {
-      throw errors.FORBIDDEN;
+      throw errors.FORBIDDEN();
     }
 
     const limit = input.limit ?? 30;
@@ -112,5 +112,82 @@ export const listMessages = base
     return {
       items: messages,
       nextCursor,
+    };
+  });
+
+export const updateMessage = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(writeSecurityMiddleware)
+  .route({
+    method: "PUT",
+    path: "/messages/:messageId",
+    summary: "Update a message",
+    tags: ["Messages"],
+  })
+  .input(updateMessageSchema)
+  .output(
+    z.object({
+      message: z.custom<Message>(),
+      canEdit: z.boolean(),
+    }),
+  )
+  .handler(async ({ input, context, errors }) => {
+    const message = await prisma.message.findFirst({
+      where: {
+        id: input.messageId,
+        Channel: {
+          workspaceId: context.workspace.orgCode,
+        },
+      },
+      select: {
+        id: true,
+        authorId: true,
+      },
+    });
+
+    if (!message) {
+      throw errors.NOT_FOUND();
+    }
+
+    if (message.authorId !== context.user.id) {
+      throw errors.FORBIDDEN();
+    }
+
+    // NEW: check whether the edited content contains text
+    let hasText = false;
+
+    try {
+      const content = JSON.parse(input.content);
+
+      hasText = content.content?.some((node: any) =>
+        node.content?.some(
+          (child: any) =>
+            typeof child.text === "string" && child.text.trim().length > 0,
+        ),
+      );
+    } catch {
+      throw errors.BAD_REQUEST();
+    }
+
+    // CHANGED: normal edit vs deleted message
+    const updated = await prisma.message.update({
+      where: {
+        id: input.messageId,
+      },
+      data: hasText
+        ? {
+            content: input.content,
+            deletedAt: null,
+          }
+        : {
+            deletedAt: new Date(),
+          },
+    });
+
+    return {
+      message: updated,
+      canEdit: updated.authorId === context.user.id,
     };
   });

@@ -8,35 +8,28 @@ datasource db {
 }
 
 model Channel {
-  id  String  @id @default(uuid())
-
-  name  String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  // Foreign keys (Kinde IDs)
-  workspaceId String // Kinde organization ID
-  createdById String // Kinde user ID
-
-  message Message[]
+  id          String    @id @default(uuid())
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspaceId String
+  createdById String
+  message     Message[]
 
   @@unique([workspaceId, name])
 }
 
 model Message {
-  id String @id @default(uuid())
-
-  content String
-  imageUrl String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  authorId String //Kinde user Id
-  authorEmail String // User's email
-  authorName String // Display name
-  authorAvatar String //Avatar URL
-  Channel Channel? @relation(fields: [channelId], references: [id])
-  channelId String
+  id           String   @id @default(uuid())
+  content      String
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt DateTime?
+  authorId     String
+  authorEmail  String
+  authorName   String
+  authorAvatar String
+  channelId    String
+  Channel      Channel  @relation(fields: [channelId], references: [id])
 }

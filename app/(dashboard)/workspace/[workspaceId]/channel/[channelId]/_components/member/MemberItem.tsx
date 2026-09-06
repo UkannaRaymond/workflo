@@ -12,14 +12,15 @@ export function MemberItem({ member }: MemberItemProps) {
     <div className="px-3 py-2 hover:bg-accent cursor-pointer transition-colors">
       <div className="flex items-center space-x-3">
         <div className="relative">
-          <Avatar className="size-8">
+          <Avatar className="size-8 rounded-lg">
             <Image
               src={getAvatar(member.picture ?? null, member.email!)}
               alt="Member Avatar"
               fill
-              className="object-cover"
+              sizes="32px"
+              className="object-cover rounded-lg"
             />
-            <AvatarFallback>
+            <AvatarFallback className="rounded-lg">
               {member.full_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>

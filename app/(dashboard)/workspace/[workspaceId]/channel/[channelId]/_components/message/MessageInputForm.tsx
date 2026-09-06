@@ -96,6 +96,7 @@ export function MessageInputForm({ channelId, user }: IAppProps) {
           createdAt: new Date(),
           updatedAt: new Date(),
           authorId: user.id,
+          deletedAt: null,
           authorEmail: user.email!,
           authorName: user.given_name ?? "Ukanna Raymond",
           authorAvatar: getAvatar(user.picture, user.email!),

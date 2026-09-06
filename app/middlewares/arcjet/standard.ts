@@ -21,11 +21,15 @@ const buildStandardArcjet = () =>
     );
 export const standardSecurityMiddleware = base
   .$context<{
-    request: Request;
+    request?: Request;
     user: KindeUser<Record<string, unknown>>;
   }>()
   .middleware(async ({ context, next, errors }) => {
-    const decision = await buildStandardArcjet().protect(context.request, {
+    const { request } = context;
+    if (!request) {
+      return next();
+    }
+    const decision = await buildStandardArcjet().protect(request, {
       userId: context.user.id,
     });
 

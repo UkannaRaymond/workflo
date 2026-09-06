@@ -31,8 +31,7 @@ export function UserNav() {
         <Button
           variant="outline"
           size="icon"
-          className="size-12 rounded-xl
-                hover:rounded-lg transition-all duration-200 bg-background/50
+          className="size-12 rounded-lg transition-all duration-200 bg-background/50
                 border-border/50 hover:bg-accent hover:text-accent-foreground"
         >
           <Avatar>
@@ -40,11 +39,11 @@ export function UserNav() {
               src={getAvatar(user.picture, user.email!)}
               alt="User Image"
               fill
-              className="object-cover"
+              className="object-cover rounded-lg"
               sizes="40px"
             />
 
-            <AvatarFallback>
+            <AvatarFallback className="rounded-lg">
               {user.given_name?.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>

@@ -101,6 +101,7 @@ export function MessageInputForm({ channelId, user }: IAppProps) {
           authorName: user.given_name ?? "Ukanna Raymond",
           authorAvatar: getAvatar(user.picture, user.email!),
           channelId,
+          threadId: data.threadId ?? null,
         };
 
         /*

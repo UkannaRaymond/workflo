@@ -32,4 +32,10 @@ model Message {
   authorAvatar String
   channelId    String
   Channel      Channel  @relation(fields: [channelId], references: [id])
+  
+  // Thread relations
+  parentMessage Message? @relation("MessageThread", fields: [threadId], references: [id], onDelete: Cascade)
+  threadId String?
+  replies Message[] @relation("MessageThread")
+
 }

@@ -1,15 +1,22 @@
-import arcjet, { slidingWindow } from "@/lib/arcjet";
+import arcjet, { sensitiveInfo, slidingWindow } from "@/lib/arcjet";
 import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
 const buildStandardArcjet = () =>
-  arcjet.withRule(
-    slidingWindow({
-      mode: "LIVE",
-      interval: "1m",
-      max: 40,
-    }),
-  );
+  arcjet
+    .withRule(
+      slidingWindow({
+        mode: "LIVE",
+        interval: "1m",
+        max: 40,
+      }),
+    )
+    .withRule(
+      sensitiveInfo({
+        mode: "LIVE",
+        deny: ["PHONE_NUMBER", "CREDIT_CARD_NUMBER"],
+      }),
+    );
 
 export const writeSecurityMiddleware = base
   .$context<{
@@ -29,6 +36,13 @@ export const writeSecurityMiddleware = base
       if (decision.reason.isRateLimit()) {
         throw errors.RATE_LIMITED({
           message: "Too many impactful changes, please slow down.",
+        });
+      }
+
+      if (decision.reason.isSensitiveInfo()) {
+        throw errors.BAD_REQUEST({
+          message:
+            "Sensitive information detected. Please remove PII (e.g., credit card details, phone numbers.",
         });
       }
 

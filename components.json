@@ -23,6 +23,7 @@
   },
   "registries": {
     "@motion-primitives": "https://motion-primitives.com/c/{name}.json",
-    "@tailark": "https://tailark.com/r/{name}.json"
+    "@tailark": "https://tailark.com/r/{name}.json",
+    "@ai-elements": "https://ai-sdk.dev/elements/api/registry/{name}.json"
   }
 }

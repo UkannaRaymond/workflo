@@ -7,6 +7,8 @@
 @import "uploadthing/tw/v4";
 @source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
 
+@source "../node_modules/streamdown/dist/*.js";
+
 @custom-variant dark (&:is(.dark *));
 
 @import "tailwindcss";

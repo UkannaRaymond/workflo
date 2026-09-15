@@ -43,7 +43,7 @@ async function existingKindeMiddleWare(req: NextRequest) {
 export default createMiddleware(
   aj,
   withAuth(existingKindeMiddleWare, {
-    publicPath: ["/", "/api/uploadthing"],
+    publicPaths: ["/", "/api/uploadthing"],
   }) as NextProxy,
 );
 

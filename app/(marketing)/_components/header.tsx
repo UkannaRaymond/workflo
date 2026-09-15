@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { LogIn, Menu, X } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/public/logo.svg";
@@ -11,7 +11,6 @@ import {
   LoginLink,
   LogoutLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { span } from "motion/react-client";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const menuItems = [
@@ -141,6 +140,11 @@ export const HeroHeader = () => {
                           size: "sm",
                           className: cn(isScrolled && "lg:hidden"),
                         })}
+                        authUrlParams={{
+                          is_create_org: "true",
+                          org_name: "New Workspace",
+                          pricing_table_key: "organization_plans",
+                        }}
                       >
                         Sign Up
                       </RegisterLink>
@@ -152,6 +156,11 @@ export const HeroHeader = () => {
                           className={buttonVariants({
                             size: "sm",
                           })}
+                          authUrlParams={{
+                            is_create_org: "true",
+                            org_name: "New Workspace",
+                            pricing_table_key: "organization_plans",
+                          }}
                         >
                           Get Started
                         </RegisterLink>

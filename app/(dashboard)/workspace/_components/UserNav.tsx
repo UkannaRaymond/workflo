@@ -34,7 +34,7 @@ export function UserNav() {
           className="size-12 rounded-lg transition-all duration-200 bg-background/50
                 border-border/50 hover:bg-accent hover:text-accent-foreground"
         >
-          <Avatar>
+          <Avatar className="size-8 rounded-full overflow-hidden">
             <Image
               src={getAvatar(user.picture, user.email!)}
               alt="User Image"
@@ -59,7 +59,7 @@ export function UserNav() {
           className="font-normal flex items-center gap-2 px-1
         py-1.5 text-left text-sm"
         >
-          <Avatar className="relative size-8 rounded-lg">
+          <Avatar className="size-8 rounded-full overflow-hidden">
             <AvatarImage
               src={getAvatar(user.picture, user.email!)}
               alt="User Image"

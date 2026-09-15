@@ -18,7 +18,7 @@ export function WorkspaceMembersList() {
           className="px-3 py-2 hover:bg-accent cursor-pointer transition-colors flex items-center space-x-3"
         >
           <div className="relative">
-            <Avatar className="size-8 relative">
+            <Avatar className="size-8 rounded-full overflow-hidden">
               <Image
                 src={getAvatar(member.picture ?? null, member.email!)}
                 alt="User Image"

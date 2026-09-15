@@ -1,0 +1,19 @@
+{
+  "name": "workflo-chat-realtime",
+  "main": "realtime/index.ts",
+  "compatibility_date": "2026-09-15",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "Chat",
+        "class_name": "Chat",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1", // Should be unique for each entry
+      "new_sqlite_classes": ["Chat"],
+    },
+  ],
+}

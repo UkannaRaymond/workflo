@@ -48,6 +48,57 @@ function groupReactions(
   }));
 }
 
+async function getMessageWithRealtimeData(
+  messageId: string,
+  userId: string,
+): Promise<MessageListItem | null> {
+  const message = await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+    include: {
+      MessageReaction: {
+        select: {
+          emoji: true,
+          userId: true,
+        },
+      },
+      _count: {
+        select: {
+          replies: true,
+        },
+      },
+    },
+  });
+
+  if (!message) {
+    return null;
+  }
+
+  return {
+    id: message.id,
+    content: message.content,
+    imageUrl: message.imageUrl,
+    createdAt: message.createdAt,
+    updatedAt: message.updatedAt,
+    deletedAt: message.deletedAt,
+    authorId: message.authorId,
+    authorAvatar: message.authorAvatar,
+    authorEmail: message.authorEmail,
+    authorName: message.authorName,
+    channelId: message.channelId,
+    threadId: message.threadId,
+    replyCount: message._count.replies,
+    reactions: groupReactions(
+      message.MessageReaction.map((reaction) => ({
+        emoji: reaction.emoji,
+        userId: reaction.userId,
+      })),
+      userId,
+    ),
+  };
+}
+
 export const createMessage = base
   .use(requiredAuthMiddleware)
   .use(requiredWorkspaceMiddleware)
@@ -60,7 +111,7 @@ export const createMessage = base
     tags: ["Messages"],
   })
   .input(createMessageSchema)
-  .output(z.custom<Message>())
+  .output(z.custom<MessageListItem>())
   .handler(async ({ input, context, errors }) => {
     // Verify the channel belongs to the user's organization
 
@@ -107,9 +158,16 @@ export const createMessage = base
       },
     });
 
-    return {
-      ...created,
-    };
+    const realtimeMessage = await getMessageWithRealtimeData(
+      created.id,
+      context.user.id,
+    );
+
+    if (!realtimeMessage) {
+      throw errors.NOT_FOUND();
+    }
+
+    return realtimeMessage;
   });
 
 export const listMessages = base
@@ -220,7 +278,7 @@ export const updateMessage = base
   .input(updateMessageSchema)
   .output(
     z.object({
-      message: z.custom<Message>(),
+      message: z.custom<MessageListItem>(),
       canEdit: z.boolean(),
     }),
   )
@@ -277,9 +335,18 @@ export const updateMessage = base
           },
     });
 
+    const realtimeMessage = await getMessageWithRealtimeData(
+      updated.id,
+      context.user.id,
+    );
+
+    if (!realtimeMessage) {
+      throw errors.NOT_FOUND();
+    }
+
     return {
-      message: updated,
-      canEdit: updated.authorId === context.user.id,
+      message: realtimeMessage,
+      canEdit: realtimeMessage.authorId === context.user.id,
     };
   });
 

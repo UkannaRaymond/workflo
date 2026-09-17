@@ -1,21 +1,27 @@
 import z from "zod";
 import { standardSecurityMiddleware } from "../middlewares/arcjet/standard";
 import { writeSecurityMiddleware } from "../middlewares/arcjet/write";
+import { reactionSecurityMiddleware } from "../middlewares/arcjet/reaction";
 import { requiredAuthMiddleware } from "../middlewares/auth";
 import { base } from "../middlewares/base";
 import { requiredWorkspaceMiddleware } from "../middlewares/workspace";
 import { prisma } from "@/lib/db";
 import {
   createMessageSchema,
-  GroupedReactionSchema,
   GroupedReactionSchemaType,
+  ReactionDeltaSchema,
   toggleReactionSchema,
   updateMessageSchema,
 } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
-import { Message } from "@/lib/generated/prisma/client";
 import { readSecurityMiddleware } from "../middlewares/arcjet/read";
 import { MessageListItem } from "@/lib/types";
+
+interface TiptapNode {
+  type?: string;
+  text?: string;
+  content?: TiptapNode[];
+}
 
 function groupReactions(
   reactions: { emoji: string; userId: string }[],
@@ -310,12 +316,13 @@ export const updateMessage = base
     try {
       const content = JSON.parse(input.content);
 
-      hasText = content.content?.some((node: any) =>
-        node.content?.some(
-          (child: any) =>
-            typeof child.text === "string" && child.text.trim().length > 0,
-        ),
-      );
+      hasText =
+        content.content?.some((node: TiptapNode) =>
+          node.content?.some(
+            (child: TiptapNode) =>
+              typeof child.text === "string" && child.text.trim().length > 0,
+          ),
+        ) ?? false;
     } catch {
       throw errors.BAD_REQUEST();
     }
@@ -476,7 +483,7 @@ export const toggleReaction = base
   .use(requiredAuthMiddleware)
   .use(requiredWorkspaceMiddleware)
   .use(standardSecurityMiddleware)
-  .use(writeSecurityMiddleware)
+  .use(reactionSecurityMiddleware)
   .route({
     method: "POST",
     path: "/messages/:messageId/reactions",
@@ -484,12 +491,7 @@ export const toggleReaction = base
     tags: ["Messages"],
   })
   .input(toggleReactionSchema)
-  .output(
-    z.object({
-      messageId: z.string(),
-      reactions: z.array(GroupedReactionSchema),
-    }),
-  )
+  .output(ReactionDeltaSchema)
   .handler(async ({ input, context, errors }) => {
     const messages = await prisma.message.findFirst({
       where: {
@@ -521,6 +523,8 @@ export const toggleReaction = base
       skipDuplicates: true,
     });
 
+    let added = true;
+
     if (inserted.count === 0) {
       await prisma.messageReaction.deleteMany({
         where: {
@@ -529,38 +533,17 @@ export const toggleReaction = base
           emoji: input.emoji,
         },
       });
+      added = false;
     }
 
-    const updated = await prisma.message.findUnique({
-      where: {
-        id: input.messageId,
-      },
-      include: {
-        MessageReaction: {
-          select: {
-            emoji: true,
-            userId: true,
-          },
-        },
-        _count: {
-          select: {
-            replies: true,
-          },
-        },
-      },
-    });
-
-    if (!updated) {
-      throw errors.NOT_FOUND();
-    }
+    // Report only WHAT changed — who, which emoji, added or removed.
+    // Each client (including everyone else's browser) derives its own
+    // count and reactedByMe from this, so no client's screen gets
+    // stamped with the toggling user's own reactedByMe value.
     return {
-      messageId: updated.id,
-      reactions: groupReactions(
-        (updated.MessageReaction ?? []).map((r) => ({
-          emoji: r.emoji,
-          userId: r.userId,
-        })),
-        context.user.id,
-      ),
+      messageId: input.messageId,
+      emoji: input.emoji,
+      userId: context.user.id,
+      added,
     };
   });

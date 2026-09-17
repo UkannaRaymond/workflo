@@ -1,5 +1,5 @@
 import z from "zod";
-import { GroupedReactionSchema } from "./message";
+import { GroupedReactionSchema, ReactionDeltaSchema } from "./message";
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -53,16 +53,15 @@ export const ChannelEventSchema = z.union([
     type: z.literal("message:created"),
     payload: z.object({ message: RealtimeMessageSchema }),
   }),
+
   z.object({
     type: z.literal("message:updated"),
     payload: z.object({ message: RealtimeMessageSchema }),
   }),
+
   z.object({
     type: z.literal("reaction:updated"),
-    payload: z.object({
-      messageId: z.string(),
-      reactions: z.array(GroupedReactionSchema),
-    }),
+    payload: ReactionDeltaSchema,
   }),
 
   z.object({
@@ -72,3 +71,18 @@ export const ChannelEventSchema = z.union([
 ]);
 
 export type ChannelEvent = z.infer<typeof ChannelEventSchema>;
+
+// Thread level events
+export const ThreadEventSchema = z.union([
+  z.object({
+    type: z.literal("thread:reply:created"),
+    payload: z.object({ reply: RealtimeMessageSchema }),
+  }),
+
+  z.object({
+    type: z.literal("thread:reaction:updated"),
+    payload: ReactionDeltaSchema.extend({ threadId: z.string() }),
+  }),
+]);
+
+export type ThreadEventSchemaType = z.infer<typeof ThreadEventSchema>;

@@ -61,7 +61,7 @@ export function ThreadSidebarSkeleton() {
 
       {/* Reply form skeleton */}
       <div className="border-t p-4">
-        <Skeleton className="h-56 w-full rounded-md" />
+        <Skeleton className="h-62 w-full rounded-md" />
       </div>
     </div>
   );

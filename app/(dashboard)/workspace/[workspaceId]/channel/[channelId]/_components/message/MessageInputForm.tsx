@@ -28,6 +28,12 @@ interface IAppProps {
   user: KindeUser<Record<string, unknown>>;
 }
 
+interface TiptapNode {
+  type?: string;
+  text?: string;
+  content?: TiptapNode[];
+}
+
 type MessagePage = {
   items: Message[];
   nextCursor?: string;
@@ -262,9 +268,9 @@ export function MessageInputForm({ channelId, user }: IAppProps) {
       /*
        * Check whether the document contains actual text.
        */
-      const hasText = content.content?.some((node: any) =>
+      const hasText = content.content?.some((node: TiptapNode) =>
         node.content?.some(
-          (child: any) =>
+          (child: TiptapNode) =>
             typeof child.text === "string" && child.text.trim().length > 0,
         ),
       );

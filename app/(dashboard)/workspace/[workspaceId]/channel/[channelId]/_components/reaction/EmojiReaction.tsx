@@ -15,9 +15,10 @@ import { useState } from "react";
 
 interface EmojiReactionProps {
   onSelect: (emoji: string) => void;
+  disabled?: boolean;
 }
 
-export function EmojiReaction({ onSelect }: EmojiReactionProps) {
+export function EmojiReaction({ onSelect, disabled }: EmojiReactionProps) {
   const [open, setOpen] = useState(false);
   const handleEmojiSelect = (emoji: string) => {
     onSelect(emoji);
@@ -27,7 +28,12 @@ export function EmojiReaction({ onSelect }: EmojiReactionProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={"ghost"} size={"icon"} className="size-6">
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          className="size-6"
+          disabled={disabled}
+        >
           <SmilePlus className="size-4" />
         </Button>
       </PopoverTrigger>

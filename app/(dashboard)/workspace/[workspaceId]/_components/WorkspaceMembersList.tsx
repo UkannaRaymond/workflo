@@ -17,16 +17,24 @@ export function WorkspaceMembersList() {
   } = useSuspenseQuery(orpc.channel.list.queryOptions());
 
   const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
-  const currentUser = useMemo(() => {
-    if (!workspaceData?.user) return null;
+  // const currentUser = useMemo(() => {
+  //   if (!workspaceData?.user) return null;
 
-    return {
-      id: workspaceData.user.id,
-      full_name: workspaceData.user.given_name,
-      email: workspaceData.user.email,
-      picture: workspaceData.user.picture,
-    } satisfies User;
-  }, [workspaceData?.user]);
+  //   return {
+  //     id: workspaceData.user.id,
+  //     full_name: workspaceData.user.given_name,
+  //     email: workspaceData.user.email,
+  //     picture: workspaceData.user.picture,
+  //   } satisfies User;
+  // }, [workspaceData?.user]);
+  const currentUser = workspaceData?.user
+    ? ({
+        id: workspaceData.user.id,
+        full_name: workspaceData.user.given_name,
+        email: workspaceData.user.email,
+        picture: workspaceData.user.picture,
+      } satisfies User)
+    : null;
 
   const params = useParams();
   const workspaceId = params.workspaceId;
@@ -40,9 +48,24 @@ export function WorkspaceMembersList() {
     [onlineUsers],
   );
 
+  const sortedMembers = useMemo(() => {
+    return [...members].sort((a, b) => {
+      const aIsMe = a.id === currentUser?.id;
+      const bIsMe = b.id === currentUser?.id;
+      if (aIsMe !== bIsMe) return aIsMe ? -1 : 1;
+      if (aIsMe && bIsMe) return 0;
+
+      const aOnline = a.id ? onlineUserIds.has(a.id) : false;
+      const bOnline = b.id ? onlineUserIds.has(b.id) : false;
+      if (aOnline !== bOnline) return aOnline ? -1 : 1;
+
+      return 0;
+    });
+  }, [members, currentUser?.id, onlineUserIds]);
+
   return (
     <div className="space-y-0.5 py-1">
-      {members.map((member) => (
+      {sortedMembers.map((member) => (
         <div
           key={member.id}
           className="px-3 py-2 hover:bg-accent cursor-pointer transition-colors flex items-center space-x-3"
@@ -73,7 +96,9 @@ export function WorkspaceMembersList() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{member.full_name}</p>
+            <p className="text-sm font-medium truncate">
+              {member.id === currentUser?.id ? "You" : member.full_name}
+            </p>
             <p className="text-xs text-muted-foreground truncate">
               {member.email}
             </p>

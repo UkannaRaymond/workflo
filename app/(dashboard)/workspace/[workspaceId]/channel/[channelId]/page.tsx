@@ -27,7 +27,10 @@ const ChannelPageMain = () => {
     return <p>error</p>;
   }
   return (
-    <ChannelRealtimeProvider channelId={channelId}>
+    <ChannelRealtimeProvider
+      channelId={channelId}
+      currentUserId={data?.currentUser?.id}
+    >
       <div className="flex h-screen w-full">
         {/* Main Channel Area */}
         <div className="flex flex-col flex-1 min-w-0">

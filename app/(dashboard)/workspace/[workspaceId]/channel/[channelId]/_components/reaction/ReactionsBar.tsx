@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { MessageListItem } from "@/lib/types";
 import { useChannelRealtime } from "@/providers/ChannelRealtimeProviders";
+import { useOptionalThreadRealtime } from "@/providers/ThreadRealtimeProvider";
 
 type ThreadContext = { type: "thread"; threadId: string };
 type ListContext = { type: "list"; channelId: string };
@@ -33,6 +34,7 @@ export function ReactionBar({
   const { channelId } = useParams<{ channelId: string }>();
   const queryClient = useQueryClient();
   const { send } = useChannelRealtime();
+  const threadRealtime = useOptionalThreadRealtime();
 
   const toggleMutation = useMutation(
     orpc.message.reaction.toggle.mutationOptions({
@@ -40,7 +42,8 @@ export function ReactionBar({
         const bump = (rxns: GroupedReactionSchemaType[]) => {
           const found = rxns.find((r) => r.emoji === vars.emoji);
 
-          if (found) {
+          // I already reacted with this emoji -> remove mine only
+          if (found?.reactedByMe) {
             const dec = found.count - 1;
 
             return dec <= 0
@@ -51,6 +54,16 @@ export function ReactionBar({
                     : r,
                 );
           }
+
+          // Someone else already reacted with this emoji -> add mine alongside theirs
+          if (found) {
+            return rxns.map((r) =>
+              r.emoji === found.emoji
+                ? { ...r, count: r.count + 1, reactedByMe: true }
+                : r,
+            );
+          }
+
           return [...rxns, { emoji: vars.emoji, count: 1, reactedByMe: true }];
         };
         const isThread = context && context.type === "thread";
@@ -127,6 +140,15 @@ export function ReactionBar({
           payload: data,
         });
 
+        if (context && context.type === "thread" && threadRealtime) {
+          const threadId = context.threadId;
+
+          threadRealtime.send({
+            type: "thread:reaction:updated",
+            payload: { ...data, threadId },
+          });
+        }
+
         return toast.success("Emoji added");
       },
       onError: (_err, _vars, ctx) => {
@@ -154,6 +176,7 @@ export function ReactionBar({
           type="button"
           variant={"secondary"}
           size={"sm"}
+          disabled={toggleMutation.isPending}
           className={cn(
             "h-6 px-2 text-xs",
             r.reactedByMe && "bg-primary/10 border-primary border",
@@ -164,7 +187,10 @@ export function ReactionBar({
           <span>{r.count}</span>
         </Button>
       ))}
-      <EmojiReaction onSelect={handleToggle} />
+      <EmojiReaction
+        onSelect={handleToggle}
+        disabled={toggleMutation.isPending}
+      />
     </div>
   );
 }

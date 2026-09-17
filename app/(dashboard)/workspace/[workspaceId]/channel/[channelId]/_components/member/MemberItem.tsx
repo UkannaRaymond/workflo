@@ -7,9 +7,15 @@ import Image from "next/image";
 interface MemberItemProps {
   member: organization_user;
   isOnline: boolean;
+  isCurrentUser?: boolean;
 }
 
-export function MemberItem({ member, isOnline }: MemberItemProps) {
+export function MemberItem({
+  member,
+  isOnline,
+  isCurrentUser,
+}: MemberItemProps) {
+  const displayName = isCurrentUser ? "You" : member.full_name;
   const isAdmin = member.roles?.includes("admin");
 
   return (
@@ -42,7 +48,7 @@ export function MemberItem({ member, isOnline }: MemberItemProps) {
         <div className="flex-1 min-w-0">
           {isAdmin ? (
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium truncate">{member.full_name}</p>
+              <p className="text-sm font-medium truncate">{displayName}</p>
               <span
                 className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs
             font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-400/10
@@ -53,7 +59,7 @@ export function MemberItem({ member, isOnline }: MemberItemProps) {
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium truncate">{member.full_name}</p>
+              <p className="text-sm font-medium truncate">{displayName}</p>
               <span
                 className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs
             font-medium text-gray-700 ring-1 ring-inset ring-gray-700/10 dark:bg-gray-400/10

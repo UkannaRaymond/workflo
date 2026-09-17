@@ -23,6 +23,16 @@ export const GroupedReactionSchema = z.object({
   reactedByMe: z.boolean(),
 });
 
+// A viewer-agnostic fact: "this user added/removed this emoji". Safe to
+// broadcast to everyone, since nothing in it depends on who's looking.
+export const ReactionDeltaSchema = z.object({
+  messageId: z.string(),
+  emoji: z.string(),
+  userId: z.string(),
+  added: z.boolean(),
+});
+
 export type CreateMessageSchemaType = z.infer<typeof createMessageSchema>;
 export type UpdateMessageSchemaType = z.infer<typeof updateMessageSchema>;
 export type GroupedReactionSchemaType = z.infer<typeof GroupedReactionSchema>;
+export type ReactionDeltaSchemaType = z.infer<typeof ReactionDeltaSchema>;

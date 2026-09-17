@@ -5,8 +5,13 @@ import { editorExtensions } from "./extensions";
 import { MenuBar } from "./MenuBar";
 import { ReactNode } from "react";
 
-interface iAppProps {
-  field: any;
+interface EditorField {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+interface IAppProps {
+  field: EditorField;
   sendButton: ReactNode;
   footerLeft?: ReactNode;
   onEmptyChange?: (isEmpty: boolean) => void;
@@ -19,7 +24,7 @@ export function RichTextEditor({
   footerLeft,
   onEmptyChange,
   onSubmit,
-}: iAppProps) {
+}: IAppProps) {
   const editor = useEditor({
     immediatelyRender: false,
 
@@ -47,7 +52,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "max-w-none min-h-[125px] focus:outline-none p-4 prose dark:prose-invert marker:text-primary !w-full !max-w-none",
+          "max-w-none min-h-full focus:outline-none p-4 prose dark:prose-invert marker:text-primary !w-full !max-w-none",
       },
 
       handleKeyDown: (view, event) => {
@@ -71,13 +76,18 @@ export function RichTextEditor({
   });
   return (
     <div
-      className="relative w-full border border-input rounded-lg overflow-hidden
+      className="relative w-full h-62 border border-input rounded-lg overflow-hidden
         dark:bg-input/30 flex flex-col"
     >
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} className="max-h-50 overflow-y-auto" />
+      <div className="shrink-0">
+        <MenuBar editor={editor} />
+      </div>
+      <EditorContent
+        editor={editor}
+        className="flex-1 min-h-0 overflow-y-auto"
+      />
 
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-input bg-card">
+      <div className="shrink-0 flex items-center justify-between gap-2 px-3 py-2 border-t border-input bg-card">
         <div
           className="min-h-8 flex items-center
         

@@ -24,16 +24,14 @@ export function MemberOverview() {
   );
 
   const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
-  const currentUser = useMemo(() => {
-    if (!workspaceData?.user) return null;
-
-    return {
-      id: workspaceData.user.id,
-      full_name: workspaceData.user.given_name,
-      email: workspaceData.user.email,
-      picture: workspaceData.user.picture,
-    } satisfies User;
-  }, [workspaceData?.user]);
+  const currentUser = workspaceData?.user
+    ? ({
+        id: workspaceData.user.id,
+        full_name: workspaceData.user.given_name,
+        email: workspaceData.user.email,
+        picture: workspaceData.user.picture,
+      } satisfies User)
+    : null;
 
   const workspaceId = params.workspaceId;
   const { onlineUsers } = usePresence({
@@ -56,6 +54,21 @@ export function MemberOverview() {
     () => new Set(onlineUsers.map((u) => u.id)),
     [onlineUsers],
   );
+
+  const sortedMembers = useMemo(() => {
+    return [...filteredMembers].sort((a, b) => {
+      const aIsMe = a.id === currentUser?.id;
+      const bIsMe = b.id === currentUser?.id;
+      if (aIsMe !== bIsMe) return aIsMe ? -1 : 1;
+      if (aIsMe && bIsMe) return 0;
+
+      const aOnline = a.id ? onlineUserIds.has(a.id) : false;
+      const bOnline = b.id ? onlineUserIds.has(b.id) : false;
+      if (aOnline !== bOnline) return aOnline ? -1 : 1;
+
+      return 0;
+    });
+  }, [filteredMembers, currentUser?.id, onlineUserIds]);
 
   if (error) {
     return <h1>Error: (error.message)</h1>;
@@ -103,16 +116,17 @@ export function MemberOverview() {
                   </div>
                 </div>
               ))
-            ) : filteredMembers.length === 0 ? (
+            ) : sortedMembers.length === 0 ? (
               <p className="px-4 py-6 text-sm text-muted-foreground">
                 No members Found
               </p>
             ) : (
-              filteredMembers.map((member) => (
+              sortedMembers.map((member) => (
                 <MemberItem
                   member={member}
                   key={member.id}
                   isOnline={member.id ? onlineUserIds.has(member.id) : false}
+                  isCurrentUser={member.id === currentUser?.id}
                 />
               ))
             )}

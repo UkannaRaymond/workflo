@@ -31,6 +31,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useWatch } from "react-hook-form";
 
 export function CreateNewChannel() {
   const [open, setOpen] = useState(false);
@@ -73,7 +74,10 @@ export function CreateNewChannel() {
     createChannelMutation.mutate(values);
   }
 
-  const watchedName = form.watch("name");
+  const watchedName = useWatch({
+    control: form.control,
+    name: "name",
+  });
   const transformedName = watchedName ? transformChannelName(watchedName) : "";
   return (
     <Dialog open={open} onOpenChange={setOpen}>

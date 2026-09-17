@@ -17,16 +17,33 @@ const aj = arcjet({
   ],
 });
 
-async function existingKindeMiddleWare(req: NextRequest) {
-  const anyReq = req as {
-    nextUrl: NextRequest["nextUrl"];
-    kindeAuth?: { token?: any; user?: any };
+type KindeAuthData = {
+  token?: {
+    org_code?: string;
+    claims?: {
+      org_code?: string;
+    };
   };
+  user?: {
+    org_code?: string;
+  };
+};
+
+async function existingKindeMiddleWare(req: NextRequest) {
+  /*
+   * Kinde's authentication data isn't part of NextRequest's
+   * default TypeScript type, so define the properties we need.
+   */
+  const authenticatedReq = req as NextRequest & {
+    kindeAuth?: KindeAuthData;
+  };
+
   const url = req.nextUrl;
+
   const orgCode =
-    anyReq.kindeAuth?.user?.org_code ||
-    anyReq.kindeAuth?.token?.org_code ||
-    anyReq.kindeAuth?.token?.claims?.org_code;
+    authenticatedReq.kindeAuth?.user?.org_code ||
+    authenticatedReq.kindeAuth?.token?.org_code ||
+    authenticatedReq.kindeAuth?.token?.claims?.org_code;
 
   if (
     url.pathname.startsWith("/workspace") &&
@@ -57,6 +74,6 @@ export const config = {
   // matcher tells Next.js which routes to run the middleware on.
   // This runs the middleware on all routes except for static assets.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/uploadthing|/rpc).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/uploadthing|rpc).*)",
   ],
 };

@@ -3,16 +3,19 @@ import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { ArcjetNextRequest } from "@arcjet/next";
 
-const buildStandardArcjet = () =>
+// Reactions are frequent, low-risk taps — not message content — so they
+// get a roomier budget than message create/update/delete, and skip
+// sensitiveInfo scanning entirely (there's no free text to scan).
+const buildReactionArcjet = () =>
   arcjet.withRule(
     slidingWindow({
       mode: "LIVE",
       interval: "1m",
-      max: 180,
+      max: 120,
     }),
   );
 
-export const readSecurityMiddleware = base
+export const reactionSecurityMiddleware = base
   .$context<{
     request?: Request | ArcjetNextRequest;
     user: KindeUser<Record<string, unknown>>;
@@ -22,14 +25,14 @@ export const readSecurityMiddleware = base
     if (!request) {
       return next();
     }
-    const decision = await buildStandardArcjet().protect(request, {
+    const decision = await buildReactionArcjet().protect(request, {
       userId: context.user.id,
     });
 
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
         throw errors.RATE_LIMITED({
-          message: "Too many impactful changes, please slow down.",
+          message: "You're reacting a bit fast — give it a second.",
         });
       }
 

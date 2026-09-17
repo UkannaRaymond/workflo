@@ -23,7 +23,7 @@ const menuItems = [
 export const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const { getUser, isLoading, isAuthenticated } = useKindeBrowserClient();
+  const { getUser, isLoading } = useKindeBrowserClient();
   const user = getUser();
 
   React.useEffect(() => {

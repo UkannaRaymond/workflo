@@ -62,9 +62,9 @@ export function MenuBar({ editor }: MenuBarProps) {
   }
 
   return (
-    <div className="border border-input border-t-0 border-x-0 rounded-t-lg p-2 bg-card flex flex-wrap gap-1 items-center">
+    <div className="border border-input border-t-0 border-x-0 rounded-t-lg p-2 bg-card flex flex-nowrap gap-1 items-center overflow-x-auto">
       <TooltipProvider>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex shrink-0 gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Toggle
@@ -132,9 +132,9 @@ export function MenuBar({ editor }: MenuBarProps) {
           </Tooltip>
         </div>
 
-        <div className="w-px h-6 bg-border mx-2"></div>
+        <div className="w-px h-6 bg-border mx-1 shrink-0"></div>
 
-        <div className="flex flex-wrap gap-1">
+        <div className="flex shrink-0 gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Toggle
@@ -171,9 +171,9 @@ export function MenuBar({ editor }: MenuBarProps) {
             <TooltipContent>Ordered List</TooltipContent>
           </Tooltip>
         </div>
-        <div className="w-px h-6 bg-border mx-2"></div>
+        <div className="w-px h-6 bg-border mx-1 shrink-0"></div>
 
-        <div className="flex flex-wrap gap-1">
+        <div className="flex shrink-0 gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -204,8 +204,8 @@ export function MenuBar({ editor }: MenuBarProps) {
             <TooltipContent>Redo</TooltipContent>
           </Tooltip>
         </div>
-        <div className="w-px h-6 bg-border mx-2"></div>
-        <div className="flex flex-wrap gap-1">
+        <div className="w-px h-6 bg-border mx-1 shrink-0"></div>
+        <div className="flex shrink-0 gap-1">
           <ComposeAssistant
             content={JSON.stringify(editorState?.currentContent)}
             onAccept={handleAcceptCompose}

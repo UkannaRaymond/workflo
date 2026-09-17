@@ -2,7 +2,7 @@ import "server-only";
 
 import { createRouterClient } from "@orpc/server";
 import { router } from "@/app/router";
-import { headers } from "next/headers";
+import { request } from "@arcjet/next";
 
 globalThis.$client = createRouterClient(router, {
   /**
@@ -13,6 +13,7 @@ globalThis.$client = createRouterClient(router, {
    * For per-request context, use middleware context or pass a function as the initial context.
    */
   context: async () => ({
+    request: await request(),
     // headers: await headers() // provide headers if initial context required
   }),
 });

@@ -12,7 +12,17 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "lib/generated/prisma/**",
+    ".wrangler/**",
+    "worker-configuration.d.ts",
   ]),
+  {
+    files: ["components/motion-primitives/animated-group.tsx"],
+    rules: {
+      "react-hooks/static-components": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -14,7 +14,7 @@ interface usePresenceProps {
 export function usePresence({ room, currentUser }: usePresenceProps) {
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const socket = usePartySocket({
-    host: "http://127.0.0.1:8787",
+    host: process.env.NEXT_PUBLIC_WORKER_URL,
     room: room,
     party: "chat",
     onOpen() {

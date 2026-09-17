@@ -3,6 +3,7 @@
 import {
   ChannelEventSchema,
   PresenceMessageSchema,
+  ThreadEventSchema,
   UserSchema,
 } from "@/app/schemas/realtime";
 import { Connection, routePartykitRequest, Server } from "partyserver";
@@ -64,6 +65,16 @@ export class Chat extends Server {
       if (channelEvent.success) {
         const payload = JSON.stringify(channelEvent.data);
         this.broadcast(payload, [connection.id]);
+        return;
+      }
+
+      // Thread events
+      const threadEvent = ThreadEventSchema.safeParse(parsed);
+      if (threadEvent.success) {
+        const payload = JSON.stringify(threadEvent.data);
+
+        this.broadcast(payload, [connection.id]);
+
         return;
       }
     } catch (error) {

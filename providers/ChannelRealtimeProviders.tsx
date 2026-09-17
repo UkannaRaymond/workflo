@@ -3,12 +3,14 @@ import {
   ChannelEventSchema,
   RealtimeMessageType,
 } from "@/app/schemas/realtime";
+import { applyReactionDelta } from "@/lib/reactions";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import usePartySocket from "partysocket/react";
 import { createContext, ReactNode, useContext, useMemo } from "react";
 
 interface ChannelRealtimeProviderProps {
   channelId: string;
+  currentUserId?: string;
   children: ReactNode;
 }
 
@@ -24,12 +26,13 @@ const ChannelRealtimeContext =
 
 export function ChannelRealtimeProvider({
   channelId,
+  currentUserId,
   children,
 }: ChannelRealtimeProviderProps) {
   const queryClient = useQueryClient();
 
   const socket = usePartySocket({
-    host: "http://localhost:8787",
+    host: process.env.NEXT_PUBLIC_WORKER_URL,
     room: `channel-${channelId}`,
     party: "chat",
     onMessage(e) {
@@ -100,7 +103,7 @@ export function ChannelRealtimeProvider({
         }
 
         if (event.type === "reaction:updated") {
-          const { messageId, reactions } = event.payload;
+          const { messageId, emoji, userId, added } = event.payload;
 
           queryClient.setQueryData<InfiniteMessages>(
             ["message.list", channelId],
@@ -110,7 +113,18 @@ export function ChannelRealtimeProvider({
               const pages = old.pages.map((p) => ({
                 ...p,
                 items: p.items.map((m) =>
-                  m.id === messageId ? { ...m, reactions } : m,
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        reactions: applyReactionDelta(
+                          m.reactions,
+                          emoji,
+                          userId,
+                          added,
+                          currentUserId,
+                        ),
+                      }
+                    : m,
                 ),
               }));
               return { ...old, pages };

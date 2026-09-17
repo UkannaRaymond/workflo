@@ -1,9 +1,17 @@
-import React from "react";
+import React, { ReactNode } from "react";
+import type { Metadata } from "next";
 import { WorkspaceList } from "./_components/WorkspaceList";
 import { CreateWorkspace } from "./_components/CreateWorkspace";
 import { UserNav } from "./_components/UserNav";
 import { orpc } from "@/lib/orpc";
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 const WorkspaceLayout = async ({ children }: { children: React.ReactNode }) => {
   const queryClient = getQueryClient();

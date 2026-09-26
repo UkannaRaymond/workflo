@@ -34,7 +34,7 @@ importers:
         version: 1.14.7
       '@orpc/server':
         specifier: ^1.14.7
-        version: 1.14.7(ws@8.21.0)
+        version: 1.14.7(ws@8.21.3)
       '@orpc/tanstack-query':
         specifier: ^1.14.7
         version: 1.14.7(@orpc/client@1.14.7)(@tanstack/query-core@5.101.2)
@@ -161,6 +161,9 @@ importers:
       uploadthing:
         specifier: ^7.7.4
         version: 7.7.4(express@5.2.1)(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.3.2)
+      ws:
+        specifier: ^8.21.3
+        version: 8.21.3
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -6356,6 +6359,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   wsl-utils@0.3.1:
     resolution: {integrity: sha512-g/eziiSUNBSsdDJtCLB8bdYEUMj4jR7AGeUo96p/3dTafgjHhpF4RiCFPiRILwjQoDXx5MqkBr4fwWtR3Ky4Wg==}
     engines: {node: '>=20'}
@@ -7380,7 +7395,7 @@ snapshots:
 
   '@orpc/interop@1.14.7': {}
 
-  '@orpc/server@1.14.7(ws@8.21.0)':
+  '@orpc/server@1.14.7(ws@8.21.3)':
     dependencies:
       '@orpc/client': 1.14.7
       '@orpc/contract': 1.14.7
@@ -7394,7 +7409,7 @@ snapshots:
       '@orpc/standard-server-peer': 1.14.7
       cookie: 1.1.1
     optionalDependencies:
-      ws: 8.21.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - '@opentelemetry/api'
       - fastify
@@ -13368,6 +13383,8 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@8.21.0: {}
+
+  ws@8.21.3: {}
 
   wsl-utils@0.3.1:
     dependencies:

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import type { Metadata } from "next";
 import { WorkspaceList } from "./_components/WorkspaceList";
 import { CreateWorkspace } from "./_components/CreateWorkspace";
